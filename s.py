@@ -1,3 +1,2 @@
-a=int(input())
-b=int(input())
-print(a+b)
+d="5asdasdasddkadsafdasfokfdaf.cpp"
+print(d[:-4])
