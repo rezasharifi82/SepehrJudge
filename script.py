@@ -3,38 +3,29 @@
 
 from collections import deque
 import subprocess
-import sys,os,importlib
-
-#Define number of tests
-a=os.listdir("./input")
-b=os.listdir("./output")
-
-if (len(a)!= len(b)):
-    raise Exception("Internal Error #1102: Unequality at the number of inputs and outputs!")
-
-Student_src=sys.argv[-1]
-
-# Student_src=open(Student_src,"r")
-
-# p = subprocess.Popen('python r.py', shell=True, stdout=subprocess.PIPE)
-# output = p.communicate()[0]
+import sys,os,importlib,json
 
 
-
-def reshaper(filee):
+def reshaper(filee):  #Reshape the string due to string sensitivity of matching
     o=[]
     for j in filee:
         if(j.strip() != ""):
             o.append(j.strip())
     return o
 
-def check_student_source(Student_src):
+
+
+def check_student_source(Student_src): #Check if the student source is a valid file
     try: 
         i=open(Student_src,"r")
+        i.close()
     except Exception as e:
         print(e)
         raise Exception("Internal Error #1206: Student Source file not found!")
-def judge(student_ouput,correct_out):
+    
+
+
+def judge(student_ouput,correct_out): #Main function that check if the answer is correct or not
     if(len(student_ouput) != len(correct_out)):
         return False
     else:
@@ -44,7 +35,10 @@ def judge(student_ouput,correct_out):
             else:
                 return False      
     return True
-def run_py(testNo:int,Student_src:str):
+
+
+
+def run_py(testNo:int,Student_src:str): #Python interpreter function: which can return the result of that test
     try:
         Correct_out=open("./output/output{}.txt".format(testNo),"r")
         inn="./input/input{}.txt".format(testNo)
@@ -65,7 +59,7 @@ def run_py(testNo:int,Student_src:str):
     
 
 
-def run_java(testNo:int,Student_src:str):
+def run_java(testNo:int,Student_src:str): #java interpreter function : which can return the result of that test
     try:
         Correct_out=open("./output/output{}.txt".format(testNo),"r")
         inn="./input/input{}.txt".format(testNo)
@@ -86,7 +80,7 @@ def run_java(testNo:int,Student_src:str):
         print("###########################")
         raise Exception ("Internal Error #7801: test file not found")
     
-def run_cpp(testNo:int,Student_src:str):
+def run_cpp(testNo:int,Student_src:str):   #cpp compiler function : which can return the result of that test
     try:
         Correct_out=open("./output/output{}.txt".format(testNo),"r")
         inn="./input/input{}.txt".format(testNo)
@@ -107,11 +101,7 @@ def run_cpp(testNo:int,Student_src:str):
         print("###########################")
         raise Exception ("Internal Error #3217: test file not found")
     
-
-
-
-
-def runner(Student_src,Inputs):
+def runner(Student_src,Inputs): #Primary function that can realise the format of source and report the final result
     try:
         check_student_source(Student_src=Student_src)
         point=[]
@@ -144,5 +134,40 @@ def runner(Student_src,Inputs):
     except:
         raise Exception("Internal Error #1007: runner!")
 
+def save_json(result:list): #Save result to json
+    testNo=len(result)-1
+    ans={"point":(result[-1]//testNo)}
+    ress={"Test {}".format(x[0]):x[-1] for x in result[:-1]}
+    ans.update({"Tests_result":ress})
+    i=open("result.json","w")
+    i.write(json.dumps(ans))
+    return ans
 
-print(runner(Student_src=Student_src,Inputs=a))
+def save_text(result:list): # save result as text
+    testNo=len(result)-1
+    ans="point = {}".format(result[-1]//testNo)
+    ress={"Test {}".format(x[0]):x[-1] for x in result[:-1]}
+    i=open("result.txt","w+")
+    i.write(ans)
+    i.write("\n")
+    i.write(str(ress))
+    i.close()
+
+def saver(result:list): #Save the reports
+    save_json(result=result)
+    save_text(result=result)
+#--------------------------------------------------------------------------------------------------------------------
+#Define number of tests
+a=os.listdir("./input")
+b=os.listdir("./output")
+
+# Check the logical hypothesis 
+if (len(a)!= len(b)):
+    raise Exception("Internal Error #1102: Unequality at the number of inputs and outputs!")
+
+Student_src=sys.argv[-1]
+
+x=runner(Student_src=Student_src,Inputs=a)
+saver(x)
+print(x)
+
