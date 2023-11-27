@@ -128,7 +128,7 @@ def runner(Student_src,Inputs): #Primary function that can realise the format of
         else:
             raise Exception("Language Not Supported! #1100")
         
-        point.append(summi)
+        point.append((summi*100)//len(point))
         return point
             
     except:
@@ -136,7 +136,7 @@ def runner(Student_src,Inputs): #Primary function that can realise the format of
 
 def save_json(result:list): #Save result to json
     testNo=len(result)-1
-    ans={"point":(result[-1]//testNo)}
+    ans={"point":int((result[-1]//testNo)*100)}
     ress={"Test {}".format(x[0]):x[-1] for x in result[:-1]}
     ans.update({"Tests_result":ress})
     i=open("result.json","w")
@@ -145,7 +145,7 @@ def save_json(result:list): #Save result to json
 
 def save_text(result:list): # save result as text
     testNo=len(result)-1
-    ans="point = {}".format(result[-1]//testNo)
+    ans="point = {}".format((result[-1]//testNo)*100)
     ress={"Test {}".format(x[0]):x[-1] for x in result[:-1]}
     i=open("result.txt","w+")
     i.write(ans)
